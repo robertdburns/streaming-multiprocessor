@@ -1,6 +1,6 @@
 # Senior Project CPE 461/462 - Robert Burns
 
-**Abstract:** I plan to implement a Streaming Multiprocessor based on Nvidia's 2010 Fermi Architecture **[1]** **[2]**. I am doing this as I want to pursue GPU and other parallel architectures as the focus of my Masters studies, and having a foundational project will help me have a solid understanding while finishing my undergraduate degree. I chose the Fermi Streaming Multiprocessor to build as it felt like a challenging, yet scalable project where I could view public diagrams and information. This project's reverse engineering of the Core and SM architecture, while hard, will remain easier due to the public information describing its inner working [2] and since its an old architecture 
+**Abstract:** I plan to implement a Streaming Multiprocessor based on Nvidia's 2010 Fermi Architecture **[1]** **[2]**. I am doing this as I want to pursue GPU and other parallel architectures as the focus of my Masters studies, and having a foundational project will help me have a solid understanding while finishing my undergraduate degree. I chose the Fermi Streaming Multiprocessor to build as it felt like a challenging, yet scalable project where I could view public diagrams and information. This project's reverse engineering of the Core and SM architecture, while hard, will remain easier due to the public information describing its inner working **[2]** and since its an old architecture 
 
 This project consists of multiple components, including a CUDA core, load/store unit (LD/ST), special function unit (SFU), warp scheduler, and register file (RF), with the overall streaming multiprocessor organization derived from the publicly available NVIDIA Fermi SM block diagram **[2]**. 
 
@@ -11,12 +11,9 @@ This project consists of multiple components, including a CUDA core, load/store 
 
 
 I plan to implement the project with set checkpoints as follows:
+- Create block diagram of the entire system, showing 
 - Cuda Core (Int Only)
-
-
-
-
-
+- LD/ST Unit
 
 
 ## Weekly Contributions
