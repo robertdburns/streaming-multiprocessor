@@ -1,4 +1,4 @@
-# Senior Project CPE 461/462 - Robert Burns
+# Senior Project CPE 461/462 - Robert Burns, Mathew Yen
 
 **Abstract:** I plan to implement a Streaming Multiprocessor based on Nvidia's 2010 Fermi Architecture **[1]** **[2]**. I am doing this as I want to pursue GPU and other parallel architectures as the focus of my Masters studies, and having a foundational project will help me have a solid understanding while finishing my undergraduate degree. I chose the Fermi Streaming Multiprocessor to build as it felt like a challenging, yet scalable project where I could view public diagrams and information. This project's reverse engineering of the Core and SM architecture, while hard, will remain easier due to the public information describing its inner working **[2]** and since its an old architecture 
 
@@ -20,7 +20,7 @@ I plan to implement the project with set checkpoints as follows:
 
 **Week 1:** Created project abstract and shared with Dr. Maria Pantoja
 
-**Week 2:** 
+**Week 2:** Project research and scoping discussions between Robert and Mathew.
 
 ## References
 
