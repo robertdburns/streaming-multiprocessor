@@ -1,6 +1,6 @@
 # Senior Project CPE 461/462 - Robert Burns, Mathew Yen
 
-**Abstract:** I plan to implement a Streaming Multiprocessor based on Nvidia's 2010 Fermi Architecture **[1]** **[2]**. I am doing this as I want to pursue GPU and other parallel architectures as the focus of my Masters studies, and having a foundational project will help me have a solid understanding while finishing my undergraduate degree. I chose the Fermi Streaming Multiprocessor to build as it felt like a challenging, yet scalable project where I could view public diagrams and information. This project's reverse engineering of the Core and SM architecture, while hard, will remain easier due to the public information describing its inner working **[2]** and since its an old architecture 
+**Abstract:** We plan to implement a Streaming Multiprocessor based on Nvidia's 2010 Fermi Architecture **[1]** **[2]**. We chose the Fermi Streaming Multiprocessor to build as it felt like a challenging, yet scalable project where I could view public diagrams and information. This project's reverse engineering of the Core and SM architecture, while hard, will remain easier due to the public information describing its inner working **[2]** and since its an old architecture 
 
 This project consists of multiple components, including a CUDA core, load/store unit (LD/ST), special function unit (SFU), warp scheduler, and register file (RF), with the overall streaming multiprocessor organization derived from the publicly available NVIDIA Fermi SM block diagram **[2]**. 
 
@@ -10,17 +10,22 @@ This project consists of multiple components, including a CUDA core, load/store 
 <p style="text-align:center;">Figure 1: NVIDIA Fermi Streaming Multiprocessor block diagram (adapted from [2]).</p>
 
 
-I plan to implement the project with set checkpoints as follows:
-- Create block diagram of the entire system, showing 
+We plan to implement the project with set checkpoints as follows:
+- Create block diagram of the entire system
 - Cuda Core (Int Only)
+- Special Function Unit
 - LD/ST Unit
 
 
 ## Weekly Contributions
 
-**Week 1:** Created project abstract and shared with Dr. Maria Pantoja
+**Week 1:** Finalized project idea and how it will be broken up into smaller sub-projects.
 
-**Week 2:** Project research and scoping discussions between Robert and Mathew.
+**Week 2:** Wrote abstract and shared with Dr. Pantoja
+
+**Week 3:** Mathew and Robert discussed the general architecture, and shared resources on Streaming Multiprocessor and Cuda Core architectures. We plan to meet with Dr. Pantoja in an upcoming week to discuss our project in depth and plan the project's architecture and bringup. 
+
+**Week 4:** Shared further resources on architecture. We planned the project breakdown, what each of us will focus on and the order we will do it. We planned this at a high level and plan to narrow in further once our architecture has been fully planned out. Planned a meeting next week with Dr. Pantoja to talk about the project architecture during CPE470 lab time. 
 
 ## References
 
