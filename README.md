@@ -16,6 +16,10 @@ We plan to implement the project with set checkpoints as follows:
 - Special Function Unit
 - LD/ST Unit
 
+## Architecture Diagram
+
+[Diagram via Drawio](https://drive.google.com/file/d/1HVAQTDtd4KRkRzIqJjQ1NlaG7EtBYhF2/view?usp=sharing) - *Currently a Work in Progress*
+
 
 ## Weekly Contributions
 
@@ -32,3 +36,19 @@ We plan to implement the project with set checkpoints as follows:
 [1] “Fermi (microarchitecture),” *Wikipedia, The Free Encyclopedia*, Wikipedia, Jan. 2026. [Online]. Available: https://en.wikipedia.org/wiki/Fermi_(microarchitecture).
 
 [2] P. N. Glaskowsky, “NVIDIA’s Fermi: The First Complete GPU Computing Architecture,”White Paper, NVIDIA Corp., Sept. 2009. [Online]. Available: https://www.nvidia.com/content/pdf/fermi_white_papers/p.glaskowsky_nvidia's_fermi-the_first_complete_gpu_architecture.pdf.
+
+
+## Streaming Multiprocessor Resources
+
+1. [TinyGPU](https://github.com/adam-maj/tiny-gpu/tree/master) - Open Source GPU implementation. Not exactly what we want to do, but good to reference for cores, scheduling, kernels, ISA, etc.
+
+2. [Fermi Whitepaper](https://www.nvidia.com/content/pdf/fermi_white_papers/p.glaskowsky_nvidia's_fermi-the_first_complete_gpu_architecture.pdf) - The architecture we are basing off of. The bottom of page 19, "***The Streaming Multiprocessor***" starts discussing the architecture of an SM, page 20 shows the architecture diagram. Bottom Page 19 - Top Page 21 is the bulk of the important information on the SM. Memory systems are also discussed on the bottom of page 23 in the section "***The Cache and Memory Hierarchy***". 
+There is [another Fermi Whitepaper](https://www.nvidia.com/content/PDF/fermi_white_papers/NVIDIA_Fermi_Compute_architecture_Whitepaper.pdf) which might also be of some use to glance over. Particular areas of interest would be "***An Overview of the Fermi Architecture***" on page 7 and "***Third Generation Streaming Multiprocessor***" on the following page, ending on page 11.
+
+3. [Wevolver Article on CUDA Cores](https://www.wevolver.com/article/understanding-nvidia-cuda-cores-a-comprehensive-guide) - A relatively informative article explaining a lot of details about CUDA cores, SMs, CUDA kernels, etc. Might be good to glance over this to get a general idea, but mainly the part that talks about what is in a CUDA core / SM would be good to look at. 
+
+4. [Steven Gong Article](https://stevengong.co/notes/Streaming-Multiprocessor) - Relatively basic article that mentions a bin on architecture. Has resources to further blogs / articles. This article is about the Ampere architecture, a lot more recent than the Fermi architecture we are basing our design on, but helpful none-the-less.
+
+5. [Beard Sage Article](http://thebeardsage.com/cuda-streaming-multiprocessors/) - Helpful walkthrough of Warps and Warp Scheduling. Also has nice visualizations of threads <-> cores equivalence and warp scheduling.
+
+
