@@ -57,9 +57,30 @@ typedef enum logic [5:0] {
 
 
 // Sign Extend Function
-	function automatic logic signed [31:0] sext16(input logic [15:0] imm16);
-		sext16 = $signed({{16{imm16[15]}}, imm16});
-	endfunction
+function automatic logic signed [31:0] sext16(input logic [15:0] imm16);
+	sext16 = $signed({{16{imm16[15]}}, imm16});
+endfunction
+
+// Encoding Functions
+function automatic logic [31:0] enc_i(
+    input opcode_t op,
+    input logic [4:0] rd,
+    input logic [4:0] rs1,
+    input logic signed [15:0] imm16
+	);
+    enc_i = {op, rd, rs1, imm16};
+endfunction
+
+function automatic logic [31:0] enc_b(
+	input opcode_t op,
+	input logic [4:0] rs1,
+	input logic [4:0] rs2,
+	input logic signed [15:0] imm16
+	);
+	// B-type: {op, A=rs1, B=rs2, imm16}
+	enc_b = {op, rs1, rs2, imm16};
+endfunction
+
 
 
 endpackage
