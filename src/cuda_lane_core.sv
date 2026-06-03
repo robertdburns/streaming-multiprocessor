@@ -1,100 +1,108 @@
 `timescale 1ns/1ps
 
-// single 'core', or SIMT lane
-// each lane, or 'core' contains 32x 32bit regs
-// a single INT ALU
-
+// One physical SIMT lane. The same lane hardware is reused for multiple
+// resident warps. The register-file read controls are separated from the ALU
+// controls so the core can read operands for the next warp while the previous
+// warp's instruction is in the execute/writeback stage.
 module cuda_lane_core #(
-  parameter int REGS = 32,
-  parameter int unsigned LANE_ID = 0
-) 
-(
-  input  logic              clk,
-  input  logic              rst,
+    parameter int REGS = 32,
+    parameter int LANES = 16,
+    parameter int WARPS = 4,
+    parameter int WARP_BITS = (WARPS > 1) ? $clog2(WARPS) : 1,
+    parameter int unsigned LANE_ID = 0
+)(
+    input  logic                       clk,
+    input  logic                       rst,
 
-  // Lane controls
-  input  logic              lane_en,   // active mask bit for this lane
-  input  sm_pkg::opcode_t   op,
-  input  logic [4:0]        rd_idx,
-  input  logic [4:0]        rs1_idx,
-  input  logic [4:0]        rs2_idx,
-  input  logic signed [31:0] imm,
-  input  logic              commit,    // asserts in the execute/commit phase
+    // Register read controls for the currently issued warp.
+    input  logic [WARP_BITS-1:0]       rf_read_warp_id,
+    input  logic [4:0]                 rf_rs1_idx,
+    input  logic [4:0]                 rf_rs2_idx,
+    input  logic [4:0]                 rf_rs3_idx,
 
-  // Memory interface 
-  output logic [31:0]       dmem_addr,
-  input  logic [31:0]       dmem_rdata,
-  output logic              dmem_we,
-  output logic [31:0]       dmem_wdata,
+    // Execute controls for the instruction currently in the EX stage.
+    input  logic [WARP_BITS-1:0]       alu_warp_id,
+    input  sm_pkg::opcode_t            alu_op,
+    input  logic signed [31:0]         alu_imm,
 
-  // Expose operands 
-  output logic [31:0]       rs1_val,
-  output logic [31:0]       rs2_val,
+    // Single writeback port for this lane's architectural register file.
+    input  logic                       wb_en,
+    input  logic                       wb_lane_en,
+    input  logic [WARP_BITS-1:0]       wb_warp_id,
+    input  logic [4:0]                 wb_rd_idx,
+    input  logic [31:0]                wb_data,
 
-  // Simulation debug signals
-  input  logic              dbg_en,
-  input  logic [4:0]        dbg_addr,
-  output logic [31:0]       dbg_data
+    // Execute-side memory address/data. The parent core decides when these are
+    // latched into the load/store unit.
+    output logic [31:0]                dmem_issue_addr,
+    output logic [31:0]                dmem_issue_wdata,
+
+    // Execute-side ALU result. The parent core decides whether the result
+    // writes back immediately or enters a multicycle multiply/MAD pipeline.
+    output logic [31:0]                alu_result,
+    output logic                       alu_result_valid,
+
+    // Expose operands for branch/control logic in the parent core.
+    output logic [31:0]                rs1_val,
+    output logic [31:0]                rs2_val,
+    output logic [31:0]                rs3_val,
+
+    // Simulation debug signals.
+    input  logic                       dbg_en,
+    input  logic [WARP_BITS-1:0]       dbg_warp,
+    input  logic [4:0]                 dbg_addr,
+    output logic [31:0]                dbg_data
 );
-	import sm_pkg::*;
+    import sm_pkg::*;
 
-	// Reg File ===============================================================
-	logic rf_we;
-	logic [31:0] rf_wdata;
+    sm_regfile #(
+        .REGS(REGS),
+        .WARPS(WARPS),
+        .WARP_BITS(WARP_BITS)
+    ) u_rf (
+        .clk(clk),
+        .rst(rst),
+        .rwarp_id(rf_read_warp_id),
+        .raddr1(rf_rs1_idx),
+        .raddr2(rf_rs2_idx),
+        .raddr3(rf_rs3_idx),
+        .rdata1(rs1_val),
+        .rdata2(rs2_val),
+        .rdata3(rs3_val),
+        .we(wb_en && wb_lane_en),
+        .wwarp_id(wb_warp_id),
+        .waddr(wb_rd_idx),
+        .wdata(wb_data),
+        .dbg_en(dbg_en),
+        .dbg_warp(dbg_warp),
+        .dbg_addr(dbg_addr),
+        .dbg_data(dbg_data)
+    );
 
-	sm_regfile_2r1w #(
-	.REGS(REGS)
-	) u_rf (
-	.clk(clk),
-	.rst(rst),
+    logic [31:0] lane_id_32;
+    logic [31:0] warp_id_32;
+    logic [31:0] thread_id_32;
 
-	.raddr1(rs1_idx),
-	.raddr2(rs2_idx),
-	.rdata1(rs1_val),
-	.rdata2(rs2_val),
+    assign lane_id_32   = LANE_ID;
+    assign warp_id_32   = {{(32-WARP_BITS){1'b0}}, alu_warp_id};
+    assign thread_id_32 = (warp_id_32 * LANES) + lane_id_32;
 
-	.we(rf_we),
-	.waddr(rd_idx),
-	.wdata(rf_wdata),
+    sm_alu_lane u_alu (
+        .op(alu_op),
+        .rs1(rs1_val),
+        .rs2(rs2_val),
+        .rs3(rs3_val),
+        .imm(alu_imm),
+        .lane_id(lane_id_32),
+        .warp_id(warp_id_32),
+        .thread_id(thread_id_32),
+        .result(alu_result),
+        .result_valid(alu_result_valid)
+    );
 
-	.dbg_en(dbg_en),
-	.dbg_addr(dbg_addr),
-	.dbg_data(dbg_data)
-	);
-
-	// INT ALU ================================================================
-	logic [31:0] alu_res;
-	logic        alu_valid;
-
-	logic [3:0] lane_id_4;
-	assign lane_id_4 = logic [3:0]'(LANE_ID);
-
-	sm_alu_lane u_alu (
-	.op(op),
-	.rs1(rs1_val),
-	.rs2(rs2_val),
-	.imm(imm),
-	.lane_id(lane_id_4),
-	.result(alu_res),
-	.result_valid(alu_valid)
-	);
-
-	// Memory =================================================================
-    // Default: no mem op
-    dmem_addr  = 32'd0;
-    dmem_wdata = 32'd0;
-    dmem_we    = 1'b0;
-
-    // Drive memory requests only during the execute/commit phase.
-    if (commit && lane_en) begin
-      if (op == OP_LD || op == OP_ST) begin
-        dmem_addr = rs1_val + imm;
-      end
-
-      if (op == OP_ST) begin
-        dmem_wdata = rs2_val;
-        dmem_we    = 1'b1;
-      end
+    always_comb begin
+        dmem_issue_addr  = rs1_val + alu_imm;
+        dmem_issue_wdata = rs2_val;
     end
 
 endmodule
