@@ -1,53 +1,47 @@
 `timescale 1ns / 1ps
-// Global Data Memory Module
 
+// Simple lane-parallel data memory. Reads and writes are synchronous; the core
+// holds addresses stable while its fixed-latency LSU is busy.
 module sm_dmem #(
-  parameter int LANES = 16,
-  parameter int WORDS = 1024
-) 
-(
-  input  logic        clk,
-
-  input  logic [31:0] addr  [0:LANES-1],
-  output logic [31:0] rdata [0:LANES-1],
-
-  input  logic [LANES-1:0] we,
-  input  logic [31:0]      wdata [0:LANES-1]
+    parameter int LANES = 16,
+    parameter int WORDS = 1024
+)(
+    input  logic clk,
+    input  logic [31:0] addr  [0:LANES-1],
+    input  logic [LANES-1:0] re,
+    output logic [31:0] rdata [0:LANES-1],
+    input  logic [LANES-1:0] we,
+    input  logic [31:0] wdata [0:LANES-1]
 );
 
-  logic [31:0] mem [0:WORDS-1];
+    logic [31:0] mem [0:WORDS-1];
 
-  	// Combinational reads 
-	integer lr;
-	always_comb begin
-		for (lr = 0; lr < LANES; lr++) begin
-			int unsigned idx;
-			idx      = (int unsigned'(addr[lr]) >> 2) % WORDS;
-			rdata[lr]= mem[idx];
-		end
-	end
+    always_ff @(posedge clk) begin
+        for (int l = 0; l < LANES; l++) begin
+            int unsigned idx;
+            idx = (addr[l] >> 2) % WORDS;
 
-  	// Synchronous writes 
-	always_ff @(posedge clk) begin
-		for (lr = 0; lr < LANES; lr++) begin
-			if (we[lr]) begin
-			int unsigned idx;
-			idx = (int unsigned'(addr[lr]) >> 2) % WORDS;
-			mem[idx] <= wdata[lr];
-			end
-		end
-	end
+            if (we[l]) begin
+                mem[idx] <= wdata[l];
+            end
 
-	// Simulation Helper ======================================================
-	task automatic clear();
-		int i;
-		for (i = 0; i < WORDS; i++) begin
-			mem[i] = 32'd0;
-		end
-	endtask
+            if (re[l]) begin
+                rdata[l] <= mem[idx];
+            end
+        end
+    end
 
-	task automatic load_hex(input string path);
-		$readmemh(path, mem);
-	endtask
+    task automatic clear();
+        for (int i = 0; i < WORDS; i++) begin
+            mem[i] = 32'd0;
+        end
+        for (int l = 0; l < LANES; l++) begin
+            rdata[l] = 32'd0;
+        end
+    endtask
+
+    task automatic load_hex(input string path);
+        $readmemh(path, mem);
+    endtask
 
 endmodule
