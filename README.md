@@ -13,27 +13,11 @@ This project consists of multiple components, including a CUDA core, load/store 
 We plan to implement the project with set checkpoints as follows:
 - Create block diagram of the entire system
 - Cuda Core (Int Only)
-- Special Function Unit
 - LD/ST Unit
 
 ## Architecture Diagram
 
-[Diagram via Drawio](https://drive.google.com/file/d/1HVAQTDtd4KRkRzIqJjQ1NlaG7EtBYhF2/view?usp=sharing) - *Currently a Work in Progress*
-
-
-## Weekly Contributions
-
-**Week 1:** Finalized project idea and how it will be broken up into smaller sub-projects.
-
-**Week 2:** Wrote abstract and shared with Dr. Pantoja
-
-**Week 3:** Mathew and Robert discussed the general architecture, and shared resources on Streaming Multiprocessor and Cuda Core architectures. We plan to meet with Dr. Pantoja in an upcoming week to discuss our project in depth and plan the project's architecture and bringup. 
-
-**Week 4-6:** Shared further resources on architecture. We planned the project breakdown, what each of us will focus on and the order we will do it. We planned this at a high level and plan to narrow in further once our architecture has been fully planned out. Planned a meeting next week with Dr. Pantoja to talk about the project architecture during CPE470 lab time. 
-
-**Week 7-8:** We spent these two weeks doing further planning of the block diagram and drawing it out, see [it here](https://drive.google.com/file/d/1HVAQTDtd4KRkRzIqJjQ1NlaG7EtBYhF2/view?usp=sharing). We discussed project scale and what we wanted to accomplish in the last few weeks of the quarter and what we wanted to accomplish in the spring quarter.
-
-**Week 9-10:** We finished our block diagram, built the core and scheduler outline, and started writing up our documentation. We planned to finalize the core and add further functionality, such as LD/ST units and SFUs next quarter. 
+[Diagram via Drawio](https://drive.google.com/file/d/1HVAQTDtd4KRkRzIqJjQ1NlaG7EtBYhF2/view?usp=sharing)
 
 ## References
 
